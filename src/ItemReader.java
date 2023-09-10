@@ -1,4 +1,6 @@
 public class ItemReader {
+
+    
 	/**
 	 * itemData format: {ITEM NAME}, {DESCRIPTION}, {VALUE}, {EXPIRATION IF EXPIRES}
 	 * index:                0             1           2               3
@@ -22,16 +24,15 @@ public class ItemReader {
         if (!expiry.isEmpty()) {
             expiration = Integer.valueOf(expiry);
         }
-        if (name.equals("Tomato")) {
-            return new Tomato(expiration);
-        } else if (name.equals("Rock")) {
-            return new Rock(expiration);
-        } else if (name.equals("Wand")) {
-            return new Wand(expiration);
-        } else {
-            System.err.println("Bad Item read in ItemReader");
-            System.exit(0);
-            return null;
+        switch (name) {   //SWITCH instead of bunch of if statements and removed null
+            case "Tomato":
+                return new Tomato(expiration);
+            case "Rock":
+                return new Rock(expiration);
+            case "Wand":
+                return new Wand(expiration);
+            default:
+                throw new IllegalArgumentException("Bad Item read in ItemReader");
         }
     }
 }
