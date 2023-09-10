@@ -4,6 +4,8 @@ import java.util.Optional;
 public class Basket implements BasketInterface {
     ArrayList<ItemInterface> items;
     ArrayList<Integer> quantities;
+    public static final int ITEM_NOT_FOUND = -1; //REMOVES MAGIC NUMBER
+
 
     public Basket() {
         items = new ArrayList<>();
@@ -16,7 +18,7 @@ public class Basket implements BasketInterface {
                 return i;
             }
         }
-        return -1;
+        return ITEM_NOT_FOUND;
     }
 
     public ArrayList<CartTableRow> getRowData() {
