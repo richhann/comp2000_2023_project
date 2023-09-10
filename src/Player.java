@@ -37,12 +37,13 @@ public class Player {
      */
     public Optional<ItemInterface> sell(String itemName) {
         Optional<ItemInterface> i = removeItem(itemName);
-        if (i != null) {
-            money += Double.valueOf(i.getInventoryTableRow().getColumnThree().trim());
+        if (i.isPresent()) {
+            money += Double.valueOf(i.get().getInventoryTableRow().getColumnThree().trim());
             return i;
         }
         return Optional.empty();
     }
+    
 
     /**
      * Adds an item to the held Inventory.

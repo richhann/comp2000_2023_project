@@ -64,12 +64,12 @@ public class Basket implements BasketInterface {
         // Remove/sell items from the `from` parameter
         for (int i = 0; i < items.size() && !rollback; i++) {
             for (int q = 0; q < quantities.get(i); q++) {
-                Optional<ItemInterface> saleItem = from.sell(items.get(i).getInventoryTableRow().getColumnOne());
-                if (saleItem == null) {
+                Optional<ItemInterface> saleItemOpt = from.sell(items.get(i).getInventoryTableRow().getColumnOne()); 
+                if (!saleItemOpt.isPresent()) {
                     rollback = true;
                     break;  // Trigger transaction rollback
                 }
-                transactionItems.add(saleItem);
+                transactionItems.add(saleItemOpt.get());
             }
         }
 
@@ -91,12 +91,12 @@ public class Basket implements BasketInterface {
         // Remove/sell items from the `from` parameter
         for (int i = 0; i < items.size() && !rollback; i++) {
             for (int q = 0; q < quantities.get(i); q++) {
-                ItemInterface saleItem = (ItemInterface) from.sell(items.get(i).getInventoryTableRow().getColumnOne());
-                if (saleItem == null) {
+                Optional<ItemInterface> saleItemOpt = from.sell(items.get(i).getInventoryTableRow().getColumnOne()); 
+                if (!saleItemOpt.isPresent()) {
                     rollback = true;
                     break;  // Trigger transaction rollback
                 }
-                transactionItems.add(saleItem);
+                transactionItems.add(saleItemOpt.get());
             }
         }
         if (rollback) {
