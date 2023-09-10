@@ -1,18 +1,16 @@
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class Player {
-    private String name;
-    private Inventory inventory;
+public class Player extends Trader{
+
     private double money;
     private Basket shoppingBasket;
     private Inventory viewOfStoreInventory;
 
     public Player(String playerName, double startingMoney, Inventory startingInventory) {
-        name = playerName;
-        money = startingMoney;
-        inventory = startingInventory;
-        shoppingBasket = new Basket();
+        super(playerName, startingInventory);
+        this.money = startingMoney;
+        this.shoppingBasket = new Basket();
     }
 
     /**
@@ -21,12 +19,13 @@ public class Player {
      * and the item is purchased. Otherwise, no changes are made.
      * @param item
      */
+    @Override
     public void buy(ItemInterface item) {
-        if (Double.valueOf(item.getInventoryTableRow().getColumnThree().trim()) > money) {
-            return;
+        double itemValue = Double.valueOf(item.getInventoryTableRow().getColumnThree().trim()); //MAGIC NUMBER fix ?
+        if (itemValue <= money) {
+            super.addItem(item);
+            money -= itemValue;
         }
-        inventory.addOne(item);
-        money -= Double.valueOf(item.getInventoryTableRow().getColumnThree().trim());
     }
 
     /**
@@ -35,13 +34,13 @@ public class Player {
      * the item is removed and returned.
      * @param itemName
      */
+    @Override
     public Optional<ItemInterface> sell(String itemName) {
-        Optional<ItemInterface> i = removeItem(itemName);
-        if (i.isPresent()) {
-            money += Double.valueOf(i.get().getInventoryTableRow().getColumnThree().trim());
-            return i;
+        Optional<ItemInterface> soldItem = super.removeItem(itemName);
+        if (soldItem.isPresent()) {
+            money += Double.valueOf(soldItem.get().getInventoryTableRow().getColumnThree().trim());
         }
-        return Optional.empty();
+        return soldItem;
     }
     
 

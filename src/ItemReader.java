@@ -20,19 +20,10 @@ public class ItemReader {
         
         // You may modify the below
         
-        int expiration = -1;
+        Integer expiration = null;
         if (!expiry.isEmpty()) {
             expiration = Integer.valueOf(expiry);
         }
-        switch (name) {   //SWITCH instead of bunch of if statements and removed null
-            case "Tomato":
-                return new Tomato(expiration);
-            case "Rock":
-                return new Rock(expiration);
-            case "Wand":
-                return new Wand(expiration);
-            default:
-                throw new IllegalArgumentException("Bad Item read in ItemReader");
-        }
+        return new Item(name, description, value, expiration);
     }
 }
