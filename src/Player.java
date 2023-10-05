@@ -1,99 +1,60 @@
-import java.util.ArrayList;
-
 public class Player {
     private String name;
     private Inventory inventory;
-    private double money;
-    private Basket shoppingBasket;
-    private Inventory viewOfStoreInventory;
+    private double carryWeightCapacity;
+    private Inventory storageView;
 
-    public Player(String playerName, double startingMoney, Inventory startingInventory) {
+    public Player(String playerName, double carryCapacity, Inventory sInventory) {
         name = playerName;
-        money = startingMoney;
-        inventory = startingInventory;
-        shoppingBasket = new Basket();
+        carryWeightCapacity = carryCapacity;
+        inventory = sInventory;
     }
 
-    /**
-     * Attempts to perform a purchase of the parameter item.
-     * If the player has enough money for the item, their money is reduced,
-     * and the item is purchased. Otherwise, no changes are made.
-     * @param item
-     */
-    public void buy(ItemInterface item) {
-        if (Double.valueOf(item.getInventoryTableRow().getColumnThree().trim()) > money) {
-            return;
-        }
-        inventory.addOne(item);
-        money -= Double.valueOf(item.getInventoryTableRow().getColumnThree().trim());
+    public void setStorageView(Inventory storageInventory) {
+        storageView = storageInventory;
     }
 
-    /**
-     * Attempt to sell an item by name. If an item with a matching name is
-     * found, the players money is increased by the value of the item, and
-     * the item is removed and returned.
-     * @param itemName
-     */
-    public ItemInterface sell(String itemName) {
-        ItemInterface i = removeItem(itemName);
-        if (i != null) {
-            money += Double.valueOf(i.getInventoryTableRow().getColumnThree().trim());
-            return i;
-        }
-        return null;
-    }
-
-    /**
-     * Adds an item to the held Inventory.
-     * @param item
-     */
-    public void addItem(ItemInterface item) {
-        inventory.addOne(item);
-    }
-
-    /**
-     * Removes and returns an item from the held Inventory that matches
-     * the `itemName` parameter.
-     * @param itemName
-     */
-    public ItemInterface removeItem(String itemName) {
-        return inventory.removeOne(itemName);
-    }
-
-    public Inventory getInventory() {
-        return inventory;
+    public Inventory getStorageView() {
+        return storageView;
     }
 
     public String getName() {
         return name;
     }
 
-    public Basket getShoppingBasket() {
-        return shoppingBasket;
+    public Inventory getInventory() {
+        return inventory;
     }
 
-    public void addToShoppingBasket(ItemInterface itemDataRow) {
-        shoppingBasket.add(itemDataRow);
+    public double getCarryCapacity() {
+        return carryWeightCapacity;
     }
 
-    public void removeFromShoppingBasket(String itemName) {
-        shoppingBasket.remove(itemName);
+    public double getCurrentWeight() {
+        double carrying = 0;
+        for (ItemInterface item : getInventory().searchItems("")) {
+            carrying += item.getWeight();
+        }
+        return carrying;
     }
 
-    public ArrayList<ItemInterface> getStoreInventoryView() {
-        return viewOfStoreInventory.getStock();
+    public void store(ItemInterface item, Storage storage) throws ItemNotAvailableException {
+        // Do we have the item we are trying to store
+        if (!inventory.searchItems("").contains(item)) {
+            throw new ItemNotAvailableException(item.getDefinition());
+        }
+        storage.store(inventory.remove(item));
     }
 
-    public Inventory getStoreView() {
-        return viewOfStoreInventory;
-    }
-
-    public void setStoreView(Inventory storeInventory) {
-        viewOfStoreInventory = storeInventory;
-    }
-
-    public double getMoney() {
-        return money;
+    public void retrieve(ItemInterface item, Storage storage) throws ItemNotAvailableException, ExceedWeightCapacity {
+        // Does the Storage have the item we are trying to retrieve
+        if (!storageView.searchItems("").contains(item)) {
+            throw new ItemNotAvailableException(item.getDefinition());
+        }
+        if (getCurrentWeight() + item.getWeight() > getCarryCapacity()) {
+            throw new ExceedWeightCapacity(this, item);
+        }
+        inventory.addOne(storage.retrieve(item));
     }
     
 }
