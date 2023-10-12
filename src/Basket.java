@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class Basket implements BasketInterface {
     ArrayList<ItemInterface> items;
@@ -9,13 +10,13 @@ public class Basket implements BasketInterface {
         quantities = new ArrayList<>();
     }
 
-    public int itemIndex(String itemName) {
+    public Optional<Integer> itemIndex(String itemName) {
         for (int i = 0; i < items.size(); i++) {
             if (items.get(i).getInventoryTableRow().getColumnOne().equalsIgnoreCase(itemName)) {
-                return i;
+                return Optional.of(i);
             }
         }
-        return -1;
+        return Optional.empty();
     }
 
     public ArrayList<CartTableRow> getRowData() {
@@ -30,16 +31,16 @@ public class Basket implements BasketInterface {
 
     @Override
     public void setItemQuantity(String itemName, int qty) {
-        int index = itemIndex(itemName);
-        if (index != -1) {
-            quantities.set(index, qty);
+        Optional<Integer> index = itemIndex(itemName);
+        if (index.isPresent()) {
+            quantities.set(index.get(), qty);
         }
     }
 
     public void add(ItemInterface item) {
-        int index = itemIndex(item.getInventoryTableRow().getColumnOne());
-        if (index != -1) {
-            quantities.set(index, quantities.get(index) + 1);
+        Optional<Integer> index = itemIndex(item.getInventoryTableRow().getColumnOne());
+        if (index.isPresent()) {
+            quantities.set(index.get(), quantities.get(index.get()) + 1);
         } else {
             items.add(item);
             quantities.add(1);
@@ -48,54 +49,37 @@ public class Basket implements BasketInterface {
 
     @Override
     public void remove(String itemName) {
-        int index = itemIndex(itemName);
+        Optional<Integer> index = itemIndex(itemName);
 
-        if (index != -1) {
-            items.remove(index);
-            quantities.remove(index);
+        if (index.isPresent()) {
+            items.remove((int) index.get());
+            quantities.remove((int) index.get());
         }
     }
 
     @Override
     public void processTransaction(Player from, Seller to) {
-        ArrayList<ItemInterface> transactionItems = new ArrayList<>();
-        boolean rollback = false;
-        // Remove/sell items from the `from` parameter
-        for (int i = 0; i < items.size() && !rollback; i++) {
-            for (int q = 0; q < quantities.get(i); q++) {
-                ItemInterface saleItem = from.sell(items.get(i).getInventoryTableRow().getColumnOne());
-                if (saleItem == null) {
-                    rollback = true;
-                    break;  // Trigger transaction rollback
-                }
-                transactionItems.add(saleItem);
-            }
-        }
-
-        if (rollback) {
-            for (ItemInterface item : transactionItems) {
-                from.buy(item);  // Return to `from`
-            }
-        } else {
-            for (ItemInterface item : transactionItems) {
-                to.buy(item);  // Have `to` buy each of the transaction items
-            }
-        }
+        processTransactionConsolidated(from, to);
     }
 
     @Override
     public void processTransaction(Seller from, Player to) {
+        processTransactionConsolidated(from, to);
+    }
+
+    // Take advantage of the new parent class of Player and Seller
+    public void processTransactionConsolidated(Actor from, Actor to) {
         ArrayList<ItemInterface> transactionItems = new ArrayList<>();
         boolean rollback = false;
         // Remove/sell items from the `from` parameter
         for (int i = 0; i < items.size() && !rollback; i++) {
             for (int q = 0; q < quantities.get(i); q++) {
-                ItemInterface saleItem = from.sell(items.get(i).getInventoryTableRow().getColumnOne());
-                if (saleItem == null) {
+                Optional<ItemInterface> saleItem = from.sell(items.get(i).getInventoryTableRow().getColumnOne());
+                if (saleItem.isEmpty()) {
                     rollback = true;
                     break;  // Trigger transaction rollback
                 }
-                transactionItems.add(saleItem);
+                transactionItems.add(saleItem.get());
             }
         }
         if (rollback) {

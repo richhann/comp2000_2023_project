@@ -1,6 +1,6 @@
-public class Seller {
-    private String name;
-    private Inventory inventory;
+import java.util.Optional;
+
+public class Seller extends Actor {
 
     public Seller(String storeName, Inventory startingInventory) {
         name = storeName;
@@ -11,6 +11,7 @@ public class Seller {
      * Purchases an item. As the Seller does not have a money attribute,
      * the item will always be "bought".
      */
+    @Override
     public void buy(ItemInterface item) {
         inventory.addOne(item);
     }
@@ -21,37 +22,12 @@ public class Seller {
      * @param itemName
      * @return The sold item.
      */
-    public ItemInterface sell(String itemName) {
-        ItemInterface result = removeItem(itemName);
-        if (result != null) {
+    public Optional<ItemInterface> sell(String itemName) {
+        Optional<ItemInterface> result = removeItem(itemName);
+        if (result.isPresent()) {
             return result;
         }
-        return null;
-    }
-
-    /**
-     * Adds an item to the held Inventory.
-     * @param item
-     */
-    public void addItem(ItemInterface item) {
-        inventory.addOne(item);
-    }
-
-    /**
-     * Removes and returns an item from the held Inventory that matches
-     * the `itemName` parameter.
-     * @param itemName
-     */
-    public ItemInterface removeItem(String itemName) {
-        return inventory.removeOne(itemName);
-    }
-    
-    public Inventory getInventory() {
-        return inventory;
-    }
-
-    public String getName() {
-        return name;
+        return Optional.empty();
     }
     
 }

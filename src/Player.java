@@ -1,8 +1,7 @@
 import java.util.ArrayList;
+import java.util.Optional;
 
-public class Player {
-    private String name;
-    private Inventory inventory;
+public class Player extends Actor {
     private double money;
     private Basket shoppingBasket;
     private Inventory viewOfStoreInventory;
@@ -20,6 +19,7 @@ public class Player {
      * and the item is purchased. Otherwise, no changes are made.
      * @param item
      */
+    @Override
     public void buy(ItemInterface item) {
         if (Double.valueOf(item.getInventoryTableRow().getColumnThree().trim()) > money) {
             return;
@@ -34,38 +34,15 @@ public class Player {
      * the item is removed and returned.
      * @param itemName
      */
-    public ItemInterface sell(String itemName) {
-        ItemInterface i = removeItem(itemName);
-        if (i != null) {
-            money += Double.valueOf(i.getInventoryTableRow().getColumnThree().trim());
+    @Override
+    public Optional<ItemInterface> sell(String itemName) {
+        Optional<ItemInterface> i = removeItem(itemName);
+        if (i.isPresent()) {
+            Item item = (Item) i.get();
+            money += Double.valueOf(item.getValue());
             return i;
         }
-        return null;
-    }
-
-    /**
-     * Adds an item to the held Inventory.
-     * @param item
-     */
-    public void addItem(ItemInterface item) {
-        inventory.addOne(item);
-    }
-
-    /**
-     * Removes and returns an item from the held Inventory that matches
-     * the `itemName` parameter.
-     * @param itemName
-     */
-    public ItemInterface removeItem(String itemName) {
-        return inventory.removeOne(itemName);
-    }
-
-    public Inventory getInventory() {
-        return inventory;
-    }
-
-    public String getName() {
-        return name;
+        return Optional.empty();
     }
 
     public Basket getShoppingBasket() {

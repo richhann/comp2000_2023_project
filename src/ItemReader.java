@@ -1,3 +1,5 @@
+import java.util.Optional;
+
 public class ItemReader {
 	/**
 	 * itemData format: {ITEM NAME}, {DESCRIPTION}, {VALUE}, {EXPIRATION IF EXPIRES}
@@ -18,20 +20,10 @@ public class ItemReader {
         
         // You may modify the below
         
-        int expiration = -1;
-        if (!expiry.isEmpty()) {
-            expiration = Integer.valueOf(expiry);
-        }
-        if (name.equals("Tomato")) {
-            return new Tomato(expiration);
-        } else if (name.equals("Rock")) {
-            return new Rock(expiration);
-        } else if (name.equals("Wand")) {
-            return new Wand(expiration);
+        if (expiry.isEmpty()) {
+            return new Item(name, description, value, Optional.empty());
         } else {
-            System.err.println("Bad Item read in ItemReader");
-            System.exit(0);
-            return null;
+            return new Item(name, description, value, Optional.of(Integer.valueOf(expiry)));
         }
     }
 }
