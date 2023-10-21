@@ -10,6 +10,12 @@ Your major creative work is worth 60% of your unit total and is made up of four 
 ## Milestone 2
 ### Due date is Sunday 22nd of October 2023, at 11:55 pm.
 
+The code is in the same repository as milestone1 but on a *separate* branch:
+
+`git clone https://github.com/mq-soft-tech/comp2000_2023_project.git`
+
+__You should start from the repository branch tagged as "milestone2".__
+
 The boss at LART Studios liked your work for the previous milestone, and has hired you to replace Fred. In this milestone, the boss has recently learned about design patterns and wants some of them applied to the inventory management system. After some consideration, new features have been shortlisted for you to implement, each with the intended design pattern that you should use to implement that feature.
 
 ## Main changes since milestone 1
@@ -45,7 +51,7 @@ For task 1 you have a choice between two behavioural patterns to implement.
 ### Option 1: Strategy Pattern - Item Searching
 In the previous milestone, Fred had left some really nasty searching and sorting code. The searching has been brought out into the code which you can work on, which is not well written. With the starting point, search criteria is stored as a String which is a flawed system for specifying specific types. You should look around for all relevant bits of code for item searching, but a dev has expressed dissatisfaction about the `searchItems(String)` method in the `Inventory.java` file.
 
-Additionally, creating the sorting buttons/options in the GUI has already been provided for you inside of the `SetupSearching(InventoryPage)` method of `App.java`. These importantly call the Inventory Pages `addSearchByButton` method where the name of the option and the action to perform is provided as a lambda function. You will need slightly modify these to facilitate the implementation of the strategy pattern.
+Additionally, creating the <s>sorting</s> searching buttons/options in the GUI has already been provided for you inside of the `SetupSearching(InventoryPage)` method of `App.java`. These importantly call the Inventory Pages `addSearchByButton` method where the name of the option and the action to perform is provided as a lambda function. You will need slightly modify these to facilitate the implementation of the strategy pattern.
 
 Size guide: 40 to 80 lines of code.
 
@@ -104,3 +110,12 @@ You must submit a zipped VSCode project.  Your marker will download your zip fil
     * If you do not submit a reasonable attempt at Milestone 2 you cannot sit the Viva.
     * Similarly, if you are not successful with the academic integrity component of the Viva you will receive a mark of zero for milestone 2.
 * Also note that failure to list and describe where code changes are made for any of your tasks then those tasks will not be marked.
+
+#### Edit (13/10/2023):
+correction, changed "sorting" to "searching" in Task 1.
+
+#### Edit (18/10/2023):
+a number of students have asked if they can use the pattern they didn't choose for Task 1 as their Task3. In other words if they implement *both* Strategy and *Observer* will that satisfy both Tasks 1 and 3? As long as it's clear which pattern is addressing which task, and you adhere to all the other requirements then, yes, this is allowed.
+
+#### Edit (21/10/2023):
+It seems that there is a bug in the `ui.jar` file that may prevent *some* approaches to using lambdas for the *uncraft* button from working. We've added a corrected version, but as the due date is tomorrow you will not be required to complete this aspect of task 2. In other words you only need implement the *craft* button not the *uncraft* button.
